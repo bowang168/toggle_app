@@ -1,67 +1,69 @@
 #!/usr/bin/env bash
+# MIT License - Copyright (c) 2025 Bo Wang
 
-# 功能：切换并聚焦指定终端应用；若未运行则启动；若已聚焦则最小化当前终端窗口。
-# 用法：toggle_app <WM_CLASS或命令>
-# 例子：toggle_app gnome-terminal
-# 依赖：xdotool, wmctrl
+# Toggle and focus a target application window.
+# Launches it if not running; minimizes it if already focused.
+# Usage: toggle_app <WM_CLASS or command>
+# Example: toggle_app gnome-terminal
+# Dependencies: xdotool, wmctrl
 
 set -euo pipefail
 
-# 目标应用（WM_CLASS 或 启动命令）。未提供参数则默认 gnome-terminal
+# Target application (WM_CLASS or launch command). Defaults to gnome-terminal.
 my_term=${1:-gnome-terminal}
 
-# 记录是否是新启动的应用
+# Track whether the app was just launched
 was_just_launched=false
 
-# 查找目标应用的窗口ID列表（未找到时忽略错误）
-my_term_pids=$(xdotool search --class "$my_term" 2>/dev/null || true)
+# Find window IDs matching the target application (ignore errors if none found)
+window_ids=$(xdotool search --class "$my_term" 2>/dev/null || true)
 
-# 如果没有匹配窗口，则尝试启动应用
-if [[ -z "$my_term_pids" ]]; then
+# If no matching windows, try to launch the application
+if [[ -z "$window_ids" ]]; then
     was_just_launched=true
     nohup "$my_term" >/dev/null 2>&1 &
-    # 简短等待窗口出现
+    # Wait briefly for the window to appear
     for i in 1 2 3 4 5; do
         sleep 0.2
-        my_term_pids=$(xdotool search --class "$my_term" 2>/dev/null || true)
-        [[ -n "$my_term_pids" ]] && break
+        window_ids=$(xdotool search --class "$my_term" 2>/dev/null || true)
+        [[ -n "$window_ids" ]] && break
     done
 fi
 
-# 如果刚启动应用，直接聚焦它
+# If just launched, focus the new window and exit
 if [[ "$was_just_launched" == true ]]; then
-    # 等待一下确保窗口完全加载
+    # Allow time for the window to fully load
     sleep 0.3
-    # 聚焦第一个匹配的窗口
-    first_id=$(printf '%s\n' "$my_term_pids" | head -n1)
+    # Focus the first matching window
+    first_id=$(printf '%s\n' "$window_ids" | head -n1)
     if [[ -n "$first_id" ]]; then
         xdotool windowactivate "$first_id"
     fi
     exit 0
 fi
 
-# 获取当前聚焦窗口ID（没有聚焦窗口时忽略错误）
+# Get the currently focused window ID (ignore errors if none)
 focused_window_id=$(xdotool getwindowfocus 2>/dev/null || true)
 
-# 判断当前聚焦是否为目标应用窗口
+# Check if the focused window belongs to the target application
 is_target_focused=false
-if [[ -n "$focused_window_id" && -n "$my_term_pids" ]]; then
+if [[ -n "$focused_window_id" && -n "$window_ids" ]]; then
     while read -r wid; do
         if [[ "$wid" == "$focused_window_id" ]]; then
             is_target_focused=true
             break
         fi
-    done <<< "$my_term_pids"
+    done <<< "$window_ids"
 fi
 
 if [[ "$is_target_focused" == true ]]; then
-    # 若当前已是目标终端，则最小化它
+    # Target is already focused -- minimize it
     xdotool windowminimize "$focused_window_id"
 else
-    # 否则切换到目标终端（wmctrl -x -R 使用 WM_CLASS）
+    # Switch to the target window (wmctrl -x -R matches by WM_CLASS)
     if ! wmctrl -x -R "$my_term" 2>/dev/null; then
-        # 若 wmctrl 未能匹配，回退到激活第一个匹配的窗口ID
-        first_id=$(printf '%s\n' "$my_term_pids" | head -n1)
+        # Fallback: activate the first matching window ID directly
+        first_id=$(printf '%s\n' "$window_ids" | head -n1)
         if [[ -n "$first_id" ]]; then
             xdotool windowactivate "$first_id"
         fi

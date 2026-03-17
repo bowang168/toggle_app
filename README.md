@@ -1,44 +1,44 @@
-# My OL9 shortcuts
+# toggle_app
 
-Here are my keyboard shortcuts for my Oracle Linux 9:
+A bash utility to toggle terminal application windows on Linux (GNOME). Launches the app if not running, focuses it if running in the background, and minimizes it if already focused.
 
-![Photo 0](./keyboard_shortcuts_ol9/0.png)
-![Photo 1](./keyboard_shortcuts_ol9/1.png)
-![Photo 2](./keyboard_shortcuts_ol9/2.png)
-![Photo 3](./keyboard_shortcuts_ol9/3.png)
-![Photo 4](./keyboard_shortcuts_ol9/4.png)
-![Photo 5](./keyboard_shortcuts_ol9/5.png)
-![Photo 6](./keyboard_shortcuts_ol9/6.png)
-![Photo 7](./keyboard_shortcuts_ol9/7.png)
+## Features
 
+- **Launch or focus** any application by its WM_CLASS with a single command
+- **Minimize on re-trigger** -- if the target window is already focused, it gets minimized out of the way
+- **Automatic retry** -- waits briefly for newly launched applications to register their window
+- **Lightweight** -- pure bash with no extra dependencies beyond standard X11 tools
 
+## Requirements
 
-## keyd config
+- [xdotool](https://github.com/jordansissel/xdotool)
+- [wmctrl](https://sites.google.com/site/aborber/wmctrl)
+
+## Installation
+
 ```bash
-git clone https://github.com/rvaiya/keyd
-cd keyd
-make && sudo make install
-sudo mkdir -p /etc/keyd
-sudo systemctl enable keyd
-sudo systemctl start keyd
-
-sudo .keyd/bin/keyd -m
-sudo vim /etc/keyd/default.conf
-  [ids]
-  
-  *
-  
-  [main]
-  
-  # Maps capslock to escape when pressed and control when held.
-  #capslock = overload(control, esc)
-  capslock = overload(meta, esc)
-  #capslock = overload(hyper, esc)
-  #space    = overload(leftmeta, space)
-  
-  # Remaps the escape key to capslock
-  #esc = capslock
-
-
-sudo ./keyd/bin/keyd reload
+git clone https://github.com/bowang168/toggle_app.git
+cd toggle_app
+chmod +x toggle_app
+cp toggle_app ~/.local/bin/
 ```
+
+## Usage
+
+```bash
+# Toggle gnome-terminal (default if no argument given)
+toggle_app gnome-terminal
+
+# Toggle kitty terminal
+toggle_app kitty
+```
+
+## Keyboard Shortcut Integration
+
+For the best experience, bind `toggle_app` to keyboard shortcuts in GNOME Settings > Keyboard > Custom Shortcuts. This lets you instantly summon or hide any application with a single key press.
+
+See [OL9 keyboard shortcuts](docs/ol9-shortcuts.md) for my full setup.
+
+## License
+
+MIT
