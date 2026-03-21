@@ -1,5 +1,8 @@
 # toggle_app
 
+[![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-support-yellow?style=flat-square&logo=buy-me-a-coffee)](https://buymeacoffee.com/bowang168)
+[![Sponsor](https://img.shields.io/badge/GitHub%20Sponsors-sponsor-ea4aaa?style=flat-square&logo=github-sponsors)](https://github.com/sponsors/bowang168)
+
 A bash utility to toggle terminal application windows on Linux (GNOME). Launches the app if not running, focuses it if running in the background, and minimizes it if already focused.
 
 ## Features
@@ -38,6 +41,11 @@ toggle_app kitty
 For the best experience, bind `toggle_app` to keyboard shortcuts in GNOME Settings > Keyboard > Custom Shortcuts. This lets you instantly summon or hide any application with a single key press.
 
 See [OL9 keyboard shortcuts](docs/ol9-shortcuts.md) for my full setup.
+
+## Support This Project
+
+[![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-support-yellow?style=flat-square&logo=buy-me-a-coffee)](https://buymeacoffee.com/bowang168)
+[![Sponsor](https://img.shields.io/badge/GitHub%20Sponsors-sponsor-ea4aaa?style=flat-square&logo=github-sponsors)](https://github.com/sponsors/bowang168)
 
 ## License
 
